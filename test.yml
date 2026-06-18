@@ -1,0 +1,27 @@
+name: React App Code Check
+
+# mainブランチにpushされた時、またはPull Requestが送られた時に起動
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # クラウド上のLinux環境で実行
+
+    steps:
+    - name: コードをチェックアウト
+      uses: actions/checkout@v4
+
+    - name: Node.jsの環境を準備
+      uses: actions/setup-node@v4
+      with:
+        node-size: 20
+
+    - name: 必要なパッケージ（部品）をインストール
+      run: npm install
+
+    - name: 試しにビルド（エラーが出ないかチェック）
+      run: npm run build
