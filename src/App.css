@@ -1,95 +1,47 @@
-/* 全体のリセットと共通設定 */
-#root {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 10px; /* スマホ用に余白を狭く */
-  text-align: center;
-  box-sizing: border-box;
-}
-
-body {
+/* 1. 外枠が画面幅をはみ出さないようにガチガチに固定 */
+html, body, #root {
   margin: 0;
-  background-color: #f0f2f5; /* 少し優しい背景色に */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden; /* 横スクロールを絶対に発生させない */
+  background-color: #f8f9fa; /* 少し柔らかい背景色に */
+  -webkit-tap-highlight-color: transparent; /* スマホでタップした時の青い影を消す */
 }
 
-/* ===================================================
-   PC用の基本レイアウト（画面が広いとき）
-   =================================================== */
-
-/* タブボタンのコンテナ */
-.tab-container {
-  display: flex;
-  gap: 10px;
-  max-width: 400px;
-  margin: 0 auto 20px auto;
+/* 2. 図鑑リストのスクロールバーをスマホ向けに綺麗にする（重要） */
+div::-webkit-scrollbar {
+  width: 6px; /* バーの太さ */
+  height: 6px;
 }
 
-/* メインの並び（リストと詳細カード） */
-.main-layout {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  justify-content: center;
+div::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
 }
 
-/* 左側：ポケモンリスト */
-.pokemon-list {
-  width: 360px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3列 */
-  gap: 8px;
-  background-color: #fff;
-  padding: 12px;
-  border-radius: 12px;
-  height: 75vh; /* 画面の高さの75% */
-  overflow-y: auto;
-  border: 2px solid #2196F3;
-  box-sizing: border-box;
+div::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-radius: 10px;
 }
 
-/* 右側：詳細カード */
-.detail-card {
-  width: 360px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  box-sizing: border-box;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+div::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }
 
+/* 3. ボタンをタップした時にちょっとだけ沈む気持ちいいエフェクト */
+button {
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
 
-/* ===================================================
-   📱 スマホ用のレイアウト（画面幅が 768px 以下のとき）
-   =================================================== */
-@media (max-width: 768px) {
-  #root {
-    padding: 8px;
-  }
+button:active {
+  transform: scale(0.97); /* タップした瞬間に少し小さくなる */
+  opacity: 0.9;
+}
 
-  /* タブボタンを画面幅いっぱいに */
-  .tab-container {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 15px;
-  }
-
-  /* 横並びから「縦並び」に変更！ */
-  .main-layout {
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-  }
-
-  /* リストと詳細カードをどちらも横幅100%に */
-  .pokemon-list, .detail-card {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  /* スマホの時はリストが長すぎると見づらいので少し縮める */
-  .pokemon-list {
-    height: 40vh; /* 画面の高さの40%に制限 */
-    grid-template-columns: repeat(4, 1fr); /* スマホでは4列にしてコンパクトに */
-  }
+/* 4. 画像のチラつきやボケを防ぐ */
+img {
+  max-width: 100%;
+  height: auto;
+  backface-visibility: hidden;
 }

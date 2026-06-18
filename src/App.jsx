@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import './App.css';
 
 // 🎨 ポケモンのタイプに応じた背景色・文字色の定義
 const TYPE_COLORS = {
@@ -33,7 +32,7 @@ const TYPE_JA = {
 };
 
 function App() {
-  const [currentMode, setCurrentMode] = useState('pokedex'); // 'pokedex' か 'quiz'
+  const [currentMode, setCurrentMode] = useState('pokedex');
   const [allPokemon, setAllPokemon] = useState([]);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [quizPokemon, setQuizPokemon] = useState(null);
@@ -41,11 +40,17 @@ function App() {
   const [isShiny, setIsShiny] = useState(false);
   const [isQuizMode, setIsQuizMode] = useState(true);
 
+  // 📱 スマホかどうかを判定するための画面幅ステート
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   useEffect(() => {
+    // 画面サイズが変更されたら幅を更新するイベント
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    
     const initPokedex = () => {
       setLoading(true);
       const list = [];
-      // 🌟 初代151匹から最新の1025匹（全世代）にループを拡大！
       for (let i = 1; i <= 1025; i++) {
         list.push({
           id: i,
@@ -54,19 +59,21 @@ function App() {
         });
       }
       setAllPokemon(list);
-      fetchDetailedPokemon(1, 'pokedex'); // 初期表示をフシギダネ(1)に固定
+      fetchDetailedPokemon(1, 'pokedex');
       setLoading(false);
     };
     initPokedex();
+
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const isMobile = windowWidth <= 768; // 768px以下をスマホとして扱う
 
   const fetchDetailedPokemon = async (id, mode) => {
     try {
-      // 1. ポケモンの基本データを取得
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
       const data = await response.json();
 
-      // 2. 日本語名を取得するために種族(species)データを取得
       const speciesResponse = await fetch(data.species.url);
       const speciesData = await speciesResponse.json();
       const japaneseNameObj = speciesData.names.find(n => n.language.name === 'ja');
@@ -79,7 +86,6 @@ function App() {
         setIsShiny(false);
       }
 
-      // タイプの日本語化処理
       const typeJa = data.types
         .map(t => {
           const engType = t.type.name.toUpperCase();
@@ -112,7 +118,6 @@ function App() {
   const startNewQuiz = async () => {
     setLoading(true);
     setIsQuizMode(true);
-    // 🌟 クイズの出題範囲も全1025匹からランダムに変更！
     const randomId = Math.floor(Math.random() * 1025) + 1;
     await fetchDetailedPokemon(randomId, 'quiz');
     setLoading(false);
@@ -180,10 +185,10 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '20px', width: '100%', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif', boxSizing: 'border-box' }}>
+    <div style={{ padding: isMobile ? '10px' : '20px', width: '100%', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif', boxSizing: 'border-box' }}>
       
       {/* 🧭 タブメニュー */}
-      <div style={{ display: 'flex', gap: '15px', width: '400px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '15px', width: '100%', maxWidth: '400px', marginBottom: '20px', margin: '0 auto 20px auto' }}>
         <button onClick={() => handleModeChange('pokedex')} style={{ flex: 1, padding: '12px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', borderRadius: '8px', border: 'none', backgroundColor: currentMode === 'pokedex' ? '#2a75d3' : '#fff', color: currentMode === 'pokedex' ? '#fff' : '#333', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
           📖 ポケモン図鑑
         </button>
@@ -198,19 +203,26 @@ function App() {
         <div>
           {/* ==================== 📖 図鑑モード ==================== */}
           {currentMode === 'pokedex' && (
-            <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: isMobile ? 'column' : 'row', // 📱スマホなら縦並び、PCなら横並び
+              gap: isMobile ? '20px' : '40px', 
+              alignItems: isMobile ? 'center' : 'flex-start', 
+              justifyContent: 'center' 
+            }}>
               
               {/* 👈 左側：図鑑リスト */}
               <div style={{ 
-                width: '400px',
+                width: '100%',
+                maxWidth: isMobile ? '100%' : '400px', // 📱スマホなら画面いっぱいに広げる
                 flexShrink: 0,
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(4, 1fr)', 
+                gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(4, 1fr)', // 📱スマホでも見やすく4列
                 gap: '8px', 
                 backgroundColor: '#fff', 
                 padding: '12px', 
                 borderRadius: '8px', 
-                height: '560px', 
+                height: isMobile ? '35vh' : '560px', // 📱スマホなら高さを少し抑える
                 overflowY: 'scroll', 
                 border: '3px solid #2a75d3',
                 boxSizing: 'border-box'
@@ -231,9 +243,9 @@ function App() {
                     <img 
                       src={p.sprite} 
                       alt="" 
-                      style={{ width: '65px', height: '65px', imageRendering: 'pixelated', display: 'block', margin: '0 auto' }} 
+                      style={{ width: '100%', maxWidth: '65px', height: 'auto', imageRendering: 'pixelated', display: 'block', margin: '0 auto' }} 
                     />
-                    <span style={{ fontSize: '0.75rem', color: '#666', display: 'block', fontWeight: 'bold' }}>No.{p.id}</span>
+                    <span style={{ fontSize: '0.7rem', color: '#666', display: 'block', fontWeight: 'bold' }}>No.{p.id}</span>
                   </div>
                 ))}
               </div>
@@ -241,7 +253,8 @@ function App() {
               {/* 👉 右側：詳細カード */}
               {selectedPokemon && (
                 <div style={{ 
-                  width: '420px',
+                  width: '100%',
+                  maxWidth: isMobile ? '100%' : '420px', // 📱スマホなら横幅いっぱいに
                   backgroundColor: '#f5f5f5', 
                   padding: '25px', 
                   borderRadius: '16px', 
@@ -254,10 +267,9 @@ function App() {
                   <img src={isShiny ? selectedPokemon.shinySprite : selectedPokemon.normalSprite} alt="" style={{ width: '150px', height: '150px', imageRendering: 'pixelated', display: 'block', margin: '0 auto 15px auto' }} />
                   <h2 style={{ margin: '0 0 15px 0', fontSize: '2rem', fontWeight: 'bold', color: '#2c3e50' }}>{selectedPokemon.name}</h2>
                   <div style={{ borderTop: '1px solid #ddd', paddingTop: '15px', fontSize: '1.05rem', color: '#444', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-  {/* 👇 ここを selectedPokemon.type に修正します */}
-  <div><b>タイプ:</b> {selectedPokemon.type || 'ロード中...'}</div>
-  <div><b>サイズ:</b> {selectedPokemon.height}m / {selectedPokemon.weight}kg</div>
-</div>
+                    <div><b>タイプ:</b> {selectedPokemon.type || 'ロード中...'}</div>
+                    <div><b>サイズ:</b> {selectedPokemon.height}m / {selectedPokemon.weight}kg</div>
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <button onClick={() => setIsShiny(!isShiny)} style={{ width: '100%', padding: '10px', fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ff9800', backgroundColor: '#fff', color: '#e65100' }}>🎨 すがたを切り替える ({isShiny ? 'いろちがい' : 'つうじょう'})</button>
                     <button onClick={() => playCry(selectedPokemon.cry)} style={{ width: '100%', padding: '10px', fontSize: '0.95rem', cursor: 'pointer', borderRadius: '6px', border: '1px solid #ccc', backgroundColor: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>📢 なきごえ</button>
@@ -272,11 +284,13 @@ function App() {
             <div style={{ 
               padding: '25px', 
               borderRadius: '16px', 
+              width: '100%',
               maxWidth: '420px', 
               margin: '0 auto', 
               textAlign: 'center',
               boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-              ...getQuizCardStyle()
+              ...getQuizCardStyle(),
+              boxSizing: 'border-box'
             }}>
               <span style={{ fontSize: '0.9rem', fontWeight: 'bold', opacity: 0.8 }}>{isQuizMode ? "No. ???" : `No.${quizPokemon.id}`}</span>
               <img src={isShiny ? quizPokemon.shinySprite : quizPokemon.normalSprite} alt="" style={{ width: '150px', height: '150px', imageRendering: 'pixelated', display: 'block', margin: '15px auto', filter: isQuizMode ? 'brightness(0)' : 'none' }} />
