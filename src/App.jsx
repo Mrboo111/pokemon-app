@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import './App.css';
 
 // 🎨 ポケモンのタイプに応じた背景色・文字色の定義
 const TYPE_COLORS = {
