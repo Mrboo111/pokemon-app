@@ -9,11 +9,10 @@ html, body, #root {
   box-sizing: border-box;
   font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
   
-  /* ポケモンらしい爽やかでグラデーションの効いたポップな背景 */
   background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
   background-attachment: fixed;
   
-  overflow-x: hidden; /* 横スクロールによる画面のガタつきを防止 */
+  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -21,197 +20,355 @@ html, body, #root {
   box-sizing: border-box;
 }
 
-/* ==========================================
-   🧱 2. 共通コンポーネントの基本デザイン
-   ========================================== */
-
 /* 全体を包むメインコンテナ */
-body > #root > div {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  width: 100% !important;
-  max-width: 1200px !important;
-  margin: 0 auto !important;
-  padding: 40px 20px !important;
+.app-container {
+  width: 100%;
+  max-width: 1400px; /* 大画面を活かすために最大幅を拡大 */
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* 🧭 タブコンテナ：どんな画面幅でも中央に綺麗に収まる */
-div[style*="display: flex"][style*="gap: '15px'"],
-div[style*="gap: '15px'"] {
-  display: flex !important;
-  width: 100% !important;
-  max-width: 440px !important;
-  margin: 0 auto 30px auto !important;
-  gap: 15px !important;
+/* ==========================================
+   🧭 タブ切り替えボタン
+   ========================================== */
+.tab-container {
+  display: flex;
+  width: 100%;
+  max-width: 500px; /* 少し幅を持たせる */
+  gap: 15px;
+  margin-bottom: 35px;
 }
 
-/* 👈 左側：図鑑リストの共通ベース */
-div[style*="overflowY: 'scroll'"] {
-  background-color: rgba(255, 255, 255, 0.75) !important; /* すりガラス風 */
+.tab-button {
+  flex: 1;
+  padding: 16px; /* ボタンを押しやすく少し大きく */
+  font-size: 1.05rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #555;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  background-color: #fff;
+  transform: translateY(-2px);
+}
+
+.tab-button.active.blue {
+  background-color: #2a75d3;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(42, 117, 211, 0.3);
+}
+
+.tab-button.active.pink {
+  background-color: #ff5376;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(255, 83, 118, 0.3);
+}
+
+/* ==========================================
+   🧱 レイアウト（PC・大画面表示向けに大型化）
+   ========================================== */
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  gap: 50px; /* カード同士の間隔を少し広げてゆったり配置 */
+}
+
+/* 👈 左側：図鑑リスト */
+.pokedex-list {
+  width: 520px; /* 【大幅拡大】440px → 520px に拡張 */
+  height: 750px; /* 【縦幅拡大】650px → 750px に拡張して見やすく */
+  overflow-y: scroll;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 24px;
+  background-color: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-  border-radius: 20px !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  transition: all 0.3s ease;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-/* ポケモン単体の一枚タイル */
-div[style*="cursor: 'pointer'"] {
-  background-color: rgba(255, 255, 255, 0.6) !important;
-  border: 1px solid rgba(0, 0, 0, 0.03) !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.02) !important;
-  border-radius: 12px !important;
-  transition: all 0.2s ease-in-out !important;
+/* ポケモンのタイルボタン */
+.pokemon-tile {
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* 👉 右側：詳細・クイズカードの共通ベース */
-div[style*="backgroundColor: '#f5f5f5'"], 
-div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"],
-div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
-  background-color: rgba(255, 255, 255, 0.85) !important; /* すりガラス風 */
+.pokemon-tile:hover {
+  transform: translateY(-4px) scale(1.05);
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
+
+.pokemon-tile.selected {
+  background-color: #fff4d4;
+  border-color: #ffcb05;
+  box-shadow: 0 4px 14px rgba(255, 203, 5, 0.35);
+}
+
+.pokemon-tile img {
+  width: 100%;
+  height: auto;
+}
+
+.pokemon-tile-number {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* 👉 右側：詳細カード */
+.detail-card {
+  width: 520px; /* 【大幅拡大】440px → 520px に拡張して迫力を出す */
+  padding: 35px;
+  background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 24px !important;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
-  transition: all 0.3s ease;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  text-align: center;
 }
 
+.detail-number {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #777;
+}
+
+.detail-image-container {
+  background-color: #f8fafc;
+  border-radius: 24px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.detail-image {
+  width: 240px; /* 【画像拡大】180px → 240px にしてポケモンを大きく表示！ */
+  height: 240px;
+  object-fit: contain;
+}
+
+.detail-name {
+  font-size: 2.4rem; /* 【フォント拡大】 */
+  color: #1e3a8a;
+  margin: 10px 0 25px 0;
+}
+
+.detail-info {
+  background: rgba(255,255,255,0.5);
+  padding: 20px;
+  border-radius: 16px;
+  text-align: left;
+  margin-bottom: 30px;
+  font-size: 1.05rem;
+}
+
+.detail-info p {
+  margin: 10px 0;
+  color: #334155;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.action-button {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.orange-btn { background-color: #f59e0b; }
+.orange-btn:hover { background-color: #d97706; }
+.orange-btn.shiny-active { background-color: #b45309; }
+
+.pink-btn { background-color: #ec4899; }
+.pink-btn:hover { background-color: #db2777; }
 
 /* ==========================================
-   🖥️ 3. 【PC・大画面用】（横幅 992px 以上）
+   🧠 クイズコンテナ設定
    ========================================== */
-@media (min-width: 992px) {
-  /* リストと詳細を横に綺麗に並べ、画面中央に寄せる */
-  div[style*="display: flex"][style*="gap: '40px'"],
-  div[style*="display: 'flex'"][style*="gap: '40px'"] {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    gap: 40px !important;
-  }
-
-  /* リストとカードの横幅を固定して、無駄な広がりを防ぐ */
-  div[style*="overflowY: 'scroll'"] {
-    width: 440px !important;
-    height: 650px !important;
-    padding: 20px !important;
-  }
-
-  div[style*="backgroundColor: '#f5f5f5'"], 
-  div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"],
-  div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
-    width: 440px !important;
-    padding: 30px !important;
-    margin: 0 !important;
-  }
-
-  /* PCのみマウスホバーで少し浮き上がる演出 */
-  div[style*="cursor: 'pointer'"]:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08) !important;
-    background-color: #ffffff !important;
-  }
+.quiz-container {
+  width: 100%;
+  max-width: 600px; /* クイズ画面も少し横幅を広げる */
+  text-align: center;
 }
 
-
-/* ==========================================
-    tablet 4. 【タブレット・中画面用】（横幅 769px 〜 991px）
-   ========================================== */
-@media (min-width: 769px) and (max-width: 991px) {
-  div[style*="display: flex"][style*="gap: '40px'"] {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    width: 100% !important;
-    gap: 20px !important;
-  }
-
-  /* 画面に合わせて少しスリムにする */
-  div[style*="overflowY: 'scroll'"] {
-    width: 48% !important;
-    height: 580px !important;
-    padding: 15px !important;
-  }
-
-  div[style*="backgroundColor: '#f5f5f5'"], 
-  div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"] {
-    width: 48% !important;
-    padding: 20px !important;
-  }
+.quiz-title {
+  color: #1e3a8a;
+  margin-bottom: 25px;
+  font-size: 2rem;
 }
 
+.quiz-card {
+  padding: 35px;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.quiz-image-container {
+  background-color: #f8fafc;
+  border-radius: 24px;
+  padding: 25px;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+}
+
+.quiz-image {
+  width: 220px; /* 【クイズ画像も拡大】 */
+  height: 220px;
+  object-fit: contain;
+  transition: filter 0.3s ease;
+}
+
+.quiz-image.silhouette { filter: brightness(0); }
+.quiz-image.reveal { filter: brightness(1); }
+
+.quiz-result-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ec4899;
+  margin-bottom: 25px;
+}
+
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.quiz-option-button {
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  cursor: pointer;
+  color: #334155;
+  transition: all 0.2s ease;
+}
+
+.quiz-option-button:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.quiz-option-button.correct {
+  background-color: #4ade80 !important;
+  color: white !important;
+  border-color: #22c55e !important;
+}
+
+.next-quiz-button {
+  width: 100%;
+  padding: 16px;
+  background-color: #2a75d3;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
 
 /* ==========================================
-   📱 5. 【スマホ・携帯用】（横幅 768px 以下）
+   📱 5. 【スマホ・携帯用】（横幅 768px 以下：レイアウト維持）
    ========================================== */
 @media (max-width: 768px) {
-  body > #root > div {
-    padding: 20px 12px !important;
+  .app-container {
+    padding: 20px 12px;
   }
 
-  /* 1. リストと詳細を「強制縦並び」にして中央に集める */
-  div[style*="display: flex"][style*="gap: '40px'"],
-  div[style*="display: 'flex'"][style*="gap: '40px'"] {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 25px !important;
-    width: 100% !important;
+  .main-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
   }
 
-  /* 2. 【図鑑リスト】横幅いっぱいにし、高さはスマホの画面で見やすい高さ（40vh）に固定 */
-  div[style*="overflowY: 'scroll'"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 40vh !important; /* 画面縦幅の40% */
-    grid-template-columns: repeat(4, 1fr) !important; /* 綺麗な4列キープ */
-    gap: 8px !important;
-    padding: 12px !important;
+  /* スマホの時は拡大させず、画面幅100%に綺麗にフィットさせる */
+  .pokedex-list {
+    width: 100%;
+    height: 40vh;
+    padding: 12px;
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  /* 3. 【詳細カード】スマホの横幅いっぱいに気持ちよくフィットさせる */
-  div[style*="backgroundColor: '#f5f5f5'"], 
-  div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"],
-  div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 25px 20px !important;
+  .detail-card {
+    width: 100%;
+    padding: 20px;
   }
 
-  /* スマホの時は少し文字を小さくして収まりを良くする */
-  h2 {
-    font-size: 1.7rem !important;
+  .detail-image {
+    width: 160px;
+    height: 160px;
+  }
+
+  .detail-name {
+    font-size: 1.8rem;
+  }
+  
+  .quiz-options-grid {
+    gap: 10px;
+  }
+  
+  .quiz-option-button {
+    padding: 12px;
+    font-size: 1rem;
   }
 }
 
-
 /* ==========================================
-   ✨ 6. スクリロールバー ＆ 特殊エフェクト
+   ✨ スクリロールバー ＆ 特殊エフェクト
    ========================================== */
 div::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
 }
 div::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.01);
-  border-radius: 10px;
+  background: transparent;
 }
 div::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 10px;
-}
-div::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
-}
-
-/* ボタンをタップ・クリックしたときにポンッと沈む可愛いアニメーション */
-button {
-  transition: transform 0.1s ease, filter 0.2s ease !important;
 }
 button:active {
   transform: scale(0.96) !important;
