@@ -9,95 +9,92 @@ html, body, #root {
   box-sizing: border-box;
   font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
   
-  /* ポケモンをイメージした爽やかで少しポップなライトブルーのグラデーション背景 */
-  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-  background-attachment: fixed; /* スクロールしても背景を固定 */
+  /* ポケモンをイメージした爽やかなライトブルーのグラデーション */
+  background: linear-gradient(135deg, #e2f1ff 0%, #bce3ff 100%);
+  background-attachment: fixed;
   
   overflow-x: hidden; /* 横はみ出しを絶対に防止 */
-  -webkit-tap-highlight-color: transparent; /* スマホのタップ影を消す */
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* すべての要素でパディングを含んだサイズ計算にする */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 /* ==========================================
-   🖥️ PC表示（デフォルト）の工夫
+   🖥️ PC表示（デフォルト）の修正：最重要パーツ
    ========================================== */
 
-/* タブコンテナ：PCでは中央寄せで見やすく */
-div[style*="display: flex"][style*="gap: '15px'"] {
+/* 1. アプリ全体を包む一番外側のコンテナ（画面の中央に配置する） */
+body > #root > div {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important; /* 子要素（タブやメイン画面）を中央寄せ */
+  justify-content: flex-start !important;
   width: 100% !important;
-  max-width: 440px !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 30px 20px !important;
+}
+
+/* 2. 「ポケモン図鑑 / シルエットクイズ」のタブボタンの並び */
+div[style*="gap: '15px'"], div[style*="gap: '20px'"] {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 500px !important;
   margin: 0 auto 25px auto !important;
-  gap: 12px !important;
 }
 
-/* タブボタン：ホバーエフェクトと立体感の追加 */
-div[style*="display: flex"] > button {
-  transition: all 0.2s ease !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
-}
-div[style*="display: flex"] > button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  filter: brightness(1.05);
-}
-
-/* メインレイアウト（リストと詳細の親） */
-div[style*="display: flex"][style*="gap: '40px'"] {
-  gap: 30px !important; /* PCで程よい間隔に調整 */
-  justify-content: center !important; /* 中央に寄せる */
-  max-width: 1000px;
-  margin: 0 auto;
+/* 3. 【★諸悪の根源】図鑑リストと詳細カードを横に並べるコンテナ */
+/* インラインスタイルの gap: '40px' が効いている部分をピンポイントで捕まえて中央に寄せます */
+div[style*="display: flex"][style*="gap: '40px'"], 
+div[style*="display: 'flex'"][style*="gap: '40px'"] {
+  display: flex !important;
+  flex-direction: row !important; /* PCでは確実に横並び */
+  justify-content: center !important; /* これで右側の黒い余白を消し、中央に集める */
+  align-items: flex-start !important;
+  width: 100% !important;
+  gap: 30px !important; /* 程よい間隔 */
+  margin: 0 auto !important;
 }
 
-/* 👈 左側：図鑑リストのカスタマイズ */
+/* 👈 左側：図鑑リスト（PC用） */
 div[style*="overflowY: 'scroll'"] {
-  width: 420px !important; /* PCでの幅を固定 */
-  height: 600px !important; /* リストの高さを十分に確保 */
-  background-color: rgba(255, 255, 255, 0.85) !important; /* うっすら透ける白 */
-  backdrop-filter: blur(10px); /* すりガラス効果 */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
-  border-radius: 12px !important;
-  padding: 15px !important;
+  width: 440px !important; /* 固定幅をキープ */
+  max-width: 45% !important;
+  height: calc(100vh - 180px) !important; /* 画面の高さに合わせて自動調整 */
+  min-height: 550px !important;
+  background-color: rgba(255, 255, 255, 0.75) !important; /* すりガラス風の白 */
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px !important;
+  padding: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
 }
 
-/* リスト内のポケモン1匹ずつのカード */
+/* 👉 右側：詳細カード・クイズカード（PC用） */
+div[style*="backgroundColor: '#f5f5f5'"], 
+div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"],
+div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
+  width: 440px !important;
+  max-width: 45% !important;
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px);
+  border-radius: 20px !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  margin: 0 !important; /* 勝手な余白をリセット */
+}
+
+/* リスト内のポケモンボタンのホバー効果 */
 div[style*="cursor: 'pointer'"] {
-  transition: all 0.15s ease-in-out !important;
+  transition: all 0.2s ease !important;
 }
 div[style*="cursor: 'pointer'"]:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  background-color: #fff !important;
-}
-
-/* 👉 右側：詳細カードのカスタマイズ */
-div[style*="backgroundColor: '#f5f5f5'"], div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"] {
-  width: 420px !important;
-  background-color: rgba(255, 255, 255, 0.9) !important; /* 背景に馴染む白 */
-  border-radius: 20px !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
-}
-
-/* 詳細カード内のボタンたち */
-div[style*="display: 'flex'"][style*="flexDirection: 'column'"] > button {
-  transition: all 0.2s ease !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
-}
-div[style*="display: 'flex'"][style*="flexDirection: 'column'"] > button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
-}
-
-/* 🧠 シルエットクイズのカード */
-div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
-  border-radius: 20px !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff !important;
 }
 
 
@@ -105,44 +102,33 @@ div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
    📱 携帯用・スマホ表示（画面幅が 768px 以下のとき）
    ========================================== */
 @media (max-width: 768px) {
-  /* 全体の余白をスマホ用にタイトにする */
   body > #root > div {
-    padding: 12px !important;
+    padding: 15px 10px !important;
   }
 
-  /* タブボタンを横幅いっぱいにフィットさせる */
-  div[style*="display: flex"][style*="gap: '15px'"] {
-    max-width: 100% !important;
-    margin-bottom: 15px !important;
-  }
-
-  /* 壊滅レイアウトの原因を解決：
-     横並び(row)を強制的に「縦並び(column)」に破壊して上書きします */
-  div[style*="display: flex"][style*="gap: '40px'"] {
+  /* スマホの時は「縦並び」に切り替える */
+  div[style*="display: flex"][style*="gap: '40px'"],
+  div[style*="display: 'flex'"][style*="gap: '40px'"] {
     flex-direction: column !important;
     align-items: center !important;
     gap: 20px !important;
     width: 100% !important;
   }
 
-  /* 👈 スマホの時のリスト：横幅100%にし、高さを画面の40%に抑えてスクロールしやすく */
+  /* 👈 スマホのリスト：横幅いっぱいで、上下を少しコンパクトに */
   div[style*="overflowY: 'scroll'"] {
     width: 100% !important;
     max-width: 100% !important;
-    height: 40vh !important; /* 画面の40%の高さ */
-    grid-template-columns: repeat(4, 1fr) !important; /* 4列に綺麗に並べる */
+    height: 42vh !important;
+    grid-template-columns: repeat(4, 1fr) !important; /* 4列に綺麗に整列 */
     gap: 6px !important;
     padding: 10px !important;
   }
 
-  /* スマホのリスト内のポケモン画像サイズを自動調整 */
-  div[style*="overflowY: 'scroll'"] img {
-    width: 100% !important;
-    height: auto !important;
-  }
-
-  /* 👉 スマホの時の詳細カード：横幅100%いっぱいに広げる */
-  div[style*="backgroundColor: '#f5f5f5'"], div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"] {
+  /* 👉 スマホの詳細カード：横幅いっぱいに広げる */
+  div[style*="backgroundColor: '#f5f5f5'"], 
+  div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"],
+  div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
     width: 100% !important;
     max-width: 100% !important;
     padding: 20px !important;
@@ -150,20 +136,20 @@ div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
 }
 
 /* ==========================================
-   ✨ おまけ：綺麗なスクロールバー（スマホ対応）
+   ✨ スクロールバーの見た目をスタイリッシュに
    ========================================== */
 div::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 div::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(0, 0, 0, 0.02);
   border-radius: 10px;
 }
 div::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 10px;
 }
 div::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.25);
 }
