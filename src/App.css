@@ -1,47 +1,169 @@
-/* 1. 外枠が画面幅をはみ出さないようにガチガチに固定 */
+/* ==========================================
+   🌐 全体のベース設定（背景グラデーション）
+   ========================================== */
 html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden; /* 横スクロールを絶対に発生させない */
-  background-color: #f8f9fa; /* 少し柔らかい背景色に */
-  -webkit-tap-highlight-color: transparent; /* スマホでタップした時の青い影を消す */
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+  
+  /* ポケモンをイメージした爽やかで少しポップなライトブルーのグラデーション背景 */
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  background-attachment: fixed; /* スクロールしても背景を固定 */
+  
+  overflow-x: hidden; /* 横はみ出しを絶対に防止 */
+  -webkit-tap-highlight-color: transparent; /* スマホのタップ影を消す */
 }
 
-/* 2. 図鑑リストのスクロールバーをスマホ向けに綺麗にする（重要） */
+/* すべての要素でパディングを含んだサイズ計算にする */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   🖥️ PC表示（デフォルト）の工夫
+   ========================================== */
+
+/* タブコンテナ：PCでは中央寄せで見やすく */
+div[style*="display: flex"][style*="gap: '15px'"] {
+  width: 100% !important;
+  max-width: 440px !important;
+  margin: 0 auto 25px auto !important;
+  gap: 12px !important;
+}
+
+/* タブボタン：ホバーエフェクトと立体感の追加 */
+div[style*="display: flex"] > button {
+  transition: all 0.2s ease !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+div[style*="display: flex"] > button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  filter: brightness(1.05);
+}
+
+/* メインレイアウト（リストと詳細の親） */
+div[style*="display: flex"][style*="gap: '40px'"] {
+  gap: 30px !important; /* PCで程よい間隔に調整 */
+  justify-content: center !important; /* 中央に寄せる */
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* 👈 左側：図鑑リストのカスタマイズ */
+div[style*="overflowY: 'scroll'"] {
+  width: 420px !important; /* PCでの幅を固定 */
+  height: 600px !important; /* リストの高さを十分に確保 */
+  background-color: rgba(255, 255, 255, 0.85) !important; /* うっすら透ける白 */
+  backdrop-filter: blur(10px); /* すりガラス効果 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 15px !important;
+}
+
+/* リスト内のポケモン1匹ずつのカード */
+div[style*="cursor: 'pointer'"] {
+  transition: all 0.15s ease-in-out !important;
+}
+div[style*="cursor: 'pointer'"]:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  background-color: #fff !important;
+}
+
+/* 👉 右側：詳細カードのカスタマイズ */
+div[style*="backgroundColor: '#f5f5f5'"], div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"] {
+  width: 420px !important;
+  background-color: rgba(255, 255, 255, 0.9) !important; /* 背景に馴染む白 */
+  border-radius: 20px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 詳細カード内のボタンたち */
+div[style*="display: 'flex'"][style*="flexDirection: 'column'"] > button {
+  transition: all 0.2s ease !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+div[style*="display: 'flex'"][style*="flexDirection: 'column'"] > button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+}
+
+/* 🧠 シルエットクイズのカード */
+div[style*="boxShadow: '0 4px 15px rgba(0,0,0,0.2)'"] {
+  border-radius: 20px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
+}
+
+
+/* ==========================================
+   📱 携帯用・スマホ表示（画面幅が 768px 以下のとき）
+   ========================================== */
+@media (max-width: 768px) {
+  /* 全体の余白をスマホ用にタイトにする */
+  body > #root > div {
+    padding: 12px !important;
+  }
+
+  /* タブボタンを横幅いっぱいにフィットさせる */
+  div[style*="display: flex"][style*="gap: '15px'"] {
+    max-width: 100% !important;
+    margin-bottom: 15px !important;
+  }
+
+  /* 壊滅レイアウトの原因を解決：
+     横並び(row)を強制的に「縦並び(column)」に破壊して上書きします */
+  div[style*="display: flex"][style*="gap: '40px'"] {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  /* 👈 スマホの時のリスト：横幅100%にし、高さを画面の40%に抑えてスクロールしやすく */
+  div[style*="overflowY: 'scroll'"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 40vh !important; /* 画面の40%の高さ */
+    grid-template-columns: repeat(4, 1fr) !important; /* 4列に綺麗に並べる */
+    gap: 6px !important;
+    padding: 10px !important;
+  }
+
+  /* スマホのリスト内のポケモン画像サイズを自動調整 */
+  div[style*="overflowY: 'scroll'"] img {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* 👉 スマホの時の詳細カード：横幅100%いっぱいに広げる */
+  div[style*="backgroundColor: '#f5f5f5'"], div[style*="boxShadow: '0 4px 12px rgba(0,0,0,0.15)'"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px !important;
+  }
+}
+
+/* ==========================================
+   ✨ おまけ：綺麗なスクロールバー（スマホ対応）
+   ========================================== */
 div::-webkit-scrollbar {
-  width: 6px; /* バーの太さ */
+  width: 6px;
   height: 6px;
 }
-
 div::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(0, 0, 0, 0.03);
   border-radius: 10px;
 }
-
 div::-webkit-scrollbar-thumb {
-  background: #aaa;
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
 }
-
 div::-webkit-scrollbar-thumb:hover {
-  background: #888;
-}
-
-/* 3. ボタンをタップした時にちょっとだけ沈む気持ちいいエフェクト */
-button {
-  transition: transform 0.1s ease, opacity 0.1s ease;
-}
-
-button:active {
-  transform: scale(0.97); /* タップした瞬間に少し小さくなる */
-  opacity: 0.9;
-}
-
-/* 4. 画像のチラつきやボケを防ぐ */
-img {
-  max-width: 100%;
-  height: auto;
-  backface-visibility: hidden;
+  background: rgba(0, 0, 0, 0.3);
 }
