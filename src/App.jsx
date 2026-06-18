@@ -23,7 +23,7 @@ const TYPE_COLORS = {
   FAIRY: { bg: '#D685AD', text: '#fff' },
 };
 
-// 🗺️ タイプの日本語変換マップ
+
 const TYPE_JA = {
   NORMAL: 'ノーマル', FIRE: 'ほのお', WATER: 'みず', ELECTRIC: 'でんき',
   GRASS: 'くさ', ICE: 'こおり', FIGHTING: 'かくとう', POISON: 'どく',
